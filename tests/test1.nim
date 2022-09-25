@@ -8,5 +8,6 @@
 import unittest
 
 import deno_nim
-test "can add":
-  check 45 == 45
+test "set/get env with Deno":
+    Deno.env.set("hello", "world")
+    assert Deno.env.get("hello").unwrap == "world"

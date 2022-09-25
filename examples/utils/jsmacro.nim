@@ -26,5 +26,5 @@ macro js*(args: untyped): untyped =
 
 
 runnableExamples"-r:off":
-    import std/jsconsole
-    console.log(js({a: 4, b: "hello", c: {q: 4}}))
+  import std/jsconsole
+  console.log(js({a: 4, b: "hello", c: {q: 4}}))

@@ -1,39 +1,53 @@
 import std/asyncjs
-import std/private/jsutils
 from std/jsffi import JsObject
+import std/private/jsutils
+
+import "deno_nim/option.nim"
+export unwrap, unwrap_or
+
+import "deno_nim/jscore.nim"
+export newTextEncoder, encode
 
 type
-  deno* = ref object of JsRoot
-    build*: DenoBuild
-    env*: DenoEnv
-    readTextFile*: proc(file: cstring): Future[cstring]
-    makeTempFile*: proc(options: JsObject): Future[cstring]
-    writeFile*: proc(file:cstring, data: Uint8Array): Future[void]
+    deno* = ref object of JsRoot
+        build*: DenoBuild
+        env*: DenoEnv
+        readTextFile*: proc(file: cstring): Future[cstring]
+        makeTempFile*: proc(options: JsObject): Future[cstring]
+        writeFile*: proc(file: cstring, data: Uint8Array): Future[void]
+        spawnSync*: proc(command: cstring, options: DenoSpawnOptions): DenoSpawnOutput
+        spawn*: proc(command: cstring, options: DenoSpawnOptions): Future[DenoSpawnOutput]
+        args*: seq[cstring]
 
-  DenoBuild* = ref object of JsRoot
-    target*: cstring
-    arch*: cstring
-    os*: cstring
-    vendor*: cstring
+    DirEntry* = ref object of JsRoot
+        name*: cstring
+        isFile*: bool
+        isDirectory*: bool
+        isSymlink*: bool
 
-  DenoEnv* = ref object of JsRoot
-    get*: proc(key: cstring): cstring
-    set*: proc(key: cstring, value: cstring)
+    DenoSpawnOptions* = ref object of JsRoot
+        args*: seq[cstring]
+        stdout*: cstring
+    DenoSpawnOutput* = ref object of JsRoot
+        success*: bool
+        code*: int
 
-  DenoMakeTempOptions* = ref object of JsRoot
-    dir*: cstring
-    suffix*: cstring
+    DenoBuild* = ref object of JsRoot
+        target*: cstring
+        arch*: cstring
+        os*: cstring
+        vendor*: cstring
+
+    DenoEnv* = ref object of JsRoot
+        get*: proc(key: cstring): Option[cstring]
+        set*: proc(key: cstring, value: cstring)
+
+    DenoMakeTempOptions* = ref object of JsRoot
+        dir*: cstring
+        suffix*: cstring
+
+proc readDirSync*(self: deno, path: cstring): seq[
+        DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
+
 
 var Deno* {.importjs: "Deno".}: deno
-
-
-
-type
-  TextEncoder* = ref object of JsRoot ## https://nodejs.org/api/util.html#util_class_util_textencoder
-    encoding*: cstring  ## https://nodejs.org/api/util.html#util_textencoder_encoding
-
-func newTextEncoder*(): TextEncoder {.importjs: "(new TextEncoder(@))".}
-
-
-func encode*(self: TextEncoder; input: cstring): Uint8Array {.importcpp.}
-  ## https://nodejs.org/api/util.html#util_textencoder_encode_input
