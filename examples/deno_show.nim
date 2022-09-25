@@ -2,7 +2,6 @@ import std/strformat
 import std/asyncjs
 import std/jsfetch
 import std/jsre
-import std/jsconsole
 import std/sugar
 import std/sequtils
 from std/jsffi import JsObject
@@ -34,8 +33,7 @@ let filePath = proc(file: cstring): cstring = file.match(newRegExp(
 let httpsPath = proc(file: cstring): string =
     # there can be multiple https links if there is an import map for example
     # we'll just pick the last one using  this separator " '"
-    let matches = file.match(newRegExp("(https://.*)'"))[1].`$`.split(newRegExp(
-            " '"));
+    let matches = file.match(newRegExp("(https://.*)'"))[1].split(newRegExp(" '"));
     return $matches[matches.len - 1]
 
 let downloadRemoteFileAndReturnPath = proc(path: string): Future[
@@ -59,11 +57,11 @@ let exec = proc (file: string, cmd: string): Future[bool] {.async.} =
 
 
 const listAll = proc() {.async.} =
-    let files = Deno.readDirSync(&"{homeDir()}/.deno/bin");
+    let files = Deno.readDirSync(cstring(&"{homeDir()}/.deno/bin"));
     for file in files:
         let ftype = if isFileLocal(denoFile(
                 $file.name).await): "local" else: "remote"
-        console.log(&"- {file.name} {ftype}")
+        echo(&"- {file.name} {ftype}")
 
 
 proc main(): Future[void] {.async.} =
@@ -73,7 +71,7 @@ proc main(): Future[void] {.async.} =
         let codePath = if isFileLocal(file): $filePath(
                 file) else: $file.httpsPath.downloadRemoteFileAndReturnPath.await
         if exec(codePath, $cmd()).await != true:
-                console.error(&"{cmd()} {codePath} failed")
+                echo(&"{cmd()} {codePath} failed")
     else:
         await listAll()
 

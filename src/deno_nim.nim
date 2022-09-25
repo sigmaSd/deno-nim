@@ -46,8 +46,7 @@ type
         dir*: cstring
         suffix*: cstring
 
-proc readDirSync*(self: deno, path: cstring): seq[
-        DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
+proc readDirSync*(self: deno, path: cstring): seq[DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
 
 
 var Deno* {.importjs: "Deno".}: deno
