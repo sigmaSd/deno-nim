@@ -22,3 +22,7 @@ task deno_show_run, "run deno-show example":
 task test, "run tests":
     exec "nim c --backend=js tests/test1.nim"
     exec "deno run -A tests/test1.js"
+
+task docs, "doc":
+    exec "nim doc --backend:js src/deno_nim.nim"
+    exec "deno run -A src/htmldocs/nimcache/runnableExamples/*.js"

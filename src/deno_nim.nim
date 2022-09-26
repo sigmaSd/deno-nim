@@ -52,5 +52,9 @@ type
 
 proc readDirSync*(self: deno, path: cstring): seq[DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
 
+runnableExamples"-r:off":
+    Deno.env.set("hello", "world")
+    assert Deno.env.get("hello").unwrap == "world"
+
 
 var Deno* {.importjs: "Deno".}: deno
