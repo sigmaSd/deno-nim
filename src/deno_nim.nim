@@ -21,6 +21,7 @@ type
         spawnSync*: proc(command: cstring, options: DenoSpawnOptions): DenoSpawnOutput
         spawn*: proc(command: cstring, options: DenoSpawnOptions): Future[DenoSpawnOutput]
         args*: seq[cstring]
+        cwd*: proc(): cstring
 
     DirEntry* = ref object of JsRoot
         name*: cstring
