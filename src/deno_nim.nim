@@ -1,3 +1,6 @@
+when not defined(js) and not defined(nimdoc):
+  {.fatal: "Module deno is designed to be used with the JavaScript backend.".}
+
 import std/asyncjs
 from std/jsffi import JsObject
 import std/private/jsutils
