@@ -1,3 +1,4 @@
 examples/*.js
+src/*.js
 tests/*.js
 src/htmldocs
