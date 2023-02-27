@@ -6,6 +6,7 @@ import std/sugar
 import std/sequtils
 from std/jsffi import JsObject
 
+import "../src/deno_nim/option.nim"
 import "../src/deno_nim.nim"
 from "utils/jsmacro.nim" import js
 
@@ -49,11 +50,11 @@ let cmd = () => Deno.env.get("CMD").unwrap_or("bat")
 let exec = proc (file: string, cmd: string): Future[bool] {.async.} =
     let cmdIter = cmd.split(newRegExp(" "));
     let args = if cmdIter.len > 1: cmdIter[1..cmdIter.len] else: @[]
-    let output = await Deno.spawn(cmdIter[0], DenoSpawnOptions(
-      args: args.concat(@[file.cstring]),
-      stdout: "inherit"
-    ))
-    return output.success
+    let status = await newCommand(cmdIter[0], DenoCommandOptions(
+      args: Some(args.concat(@[file.cstring])),
+      stdout: Some("inherit".cstring)
+    )).spawn.status
+    return status.success
 
 
 const listAll = proc() {.async.} =

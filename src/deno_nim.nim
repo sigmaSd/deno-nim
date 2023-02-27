@@ -11,6 +11,21 @@ export unwrap, unwrap_or
 import "deno_nim/jscore.nim"
 export newTextEncoder, encode
 
+
+type
+  DenoCommand* = ref object of JsRoot
+  DenoCommandOptions* = ref object of JsRoot
+    args*   : Option[seq[cstring]]
+    stdout* : Option[cstring]
+  DenoChildProcess = ref object of JsRoot
+    status* : Future[DenoCommandStatus]
+  DenoCommandStatus = ref object of JsRoot
+    success* : bool
+
+func newCommand*(command:cstring): DenoCommand {.importjs: "new Deno.Command(#)".}
+func newCommand*(command:cstring,options: DenoCommandOptions): DenoCommand {.importjs: "new Deno.Command(#,#)".}
+func spawn*(self: DenoCommand): DenoChildProcess {.importcpp.}
+
 type
     deno* = ref object of JsRoot
         build*: DenoBuild
@@ -19,23 +34,15 @@ type
         readTextFileSync*: proc(file: cstring): cstring
         makeTempFile*: proc(options: JsObject): Future[cstring]
         writeFile*: proc(file: cstring, data: Uint8Array): Future[void]
-        spawnSync*: proc(command: cstring, options: DenoSpawnOptions): DenoSpawnOutput
-        spawn*: proc(command: cstring, options: DenoSpawnOptions): Future[DenoSpawnOutput]
         args*: seq[cstring]
         cwd*: proc(): cstring
+        Command*: DenoCommand
 
     DirEntry* = ref object of JsRoot
         name*: cstring
         isFile*: bool
         isDirectory*: bool
         isSymlink*: bool
-
-    DenoSpawnOptions* = ref object of JsRoot
-        args*: seq[cstring]
-        stdout*: cstring
-    DenoSpawnOutput* = ref object of JsRoot
-        success*: bool
-        code*: int
 
     DenoBuild* = ref object of JsRoot
         target*: cstring
@@ -52,6 +59,7 @@ type
         suffix*: cstring
 
 proc readDirSync*(self: deno, path: cstring): seq[DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
+
 
 runnableExamples"-r:off":
     import std/asyncjs

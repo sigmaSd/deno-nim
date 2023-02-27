@@ -1,5 +1,9 @@
 type Option*[T] = distinct T
 
+proc Some*[T](o: T): Option[T] =
+  result = Option(o)
+  assert result.isSome
+
 proc isSome*[T](o: Option[T]): bool {.importjs: "# !== undefined".}
 
 proc unwrap*[T](o: Option[T]): T =
