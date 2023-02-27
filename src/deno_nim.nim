@@ -16,6 +16,7 @@ type
         build*: DenoBuild
         env*: DenoEnv
         readTextFile*: proc(file: cstring): Future[cstring]
+        readTextFileSync*: proc(file: cstring): cstring
         makeTempFile*: proc(options: JsObject): Future[cstring]
         writeFile*: proc(file: cstring, data: Uint8Array): Future[void]
         spawnSync*: proc(command: cstring, options: DenoSpawnOptions): DenoSpawnOutput
