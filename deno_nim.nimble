@@ -12,11 +12,13 @@ backend       = "js"
 
 import std/strformat
 
-task deno_show_compile, "compile deno-show example":
-    exec "nim c --backend=js -d:release examples/deno_show.nim"
-task deno_show_run, "run deno-show example":
+task simple, "simple":
+    exec "nim c examples/simple.nim"
+    exec "deno run -A examples/simple.js"
+
+task deno_show, "deno-show":
+    exec "nim c examples/deno_show.nim"
     let args = commandLineParams[3.. commandLineParams.len - 1].join(" ")
-    echo args
     exec &"deno run -A --unstable examples/deno_show.js {args}"
 
 task test, "run tests":

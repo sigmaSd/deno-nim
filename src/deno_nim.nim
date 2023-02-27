@@ -53,8 +53,14 @@ type
 proc readDirSync*(self: deno, path: cstring): seq[DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
 
 runnableExamples"-r:off":
+    import std/asyncjs
+    import std/jsconsole
     Deno.env.set("hello", "world")
     assert Deno.env.get("hello").unwrap == "world"
+    proc main(): Future[void] {.async.} =
+        Deno.readTextFile("/etc/hosts").await.echo
+        console.log(Deno.build)
+    discard main()
 
 
 var Deno* {.importjs: "Deno".}: deno
