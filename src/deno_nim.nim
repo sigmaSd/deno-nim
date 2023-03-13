@@ -32,6 +32,7 @@ type
         env*: DenoEnv
         readTextFile*: proc(file: cstring): Future[cstring]
         readTextFileSync*: proc(file: cstring): cstring
+        realPathSync*: proc(path: cstring): cstring
         makeTempFile*: proc(options: JsObject): Future[cstring]
         writeFile*: proc(file: cstring, data: Uint8Array): Future[void]
         args*: seq[cstring]
@@ -59,7 +60,6 @@ type
         suffix*: cstring
 
 proc readDirSync*(self: deno, path: cstring): seq[DirEntry] {.importjs: "[... #.readDirSync(#)]".} #TODO iterbale
-
 
 runnableExamples"-r:off":
     import std/asyncjs
